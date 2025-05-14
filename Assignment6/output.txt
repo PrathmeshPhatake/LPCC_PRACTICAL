@@ -1,0 +1,4 @@
+Optimized Three Address Code:
+t1 = 9
+t2 = t1 * 2
+t3 = 9

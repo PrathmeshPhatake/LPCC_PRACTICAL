@@ -1,0 +1,7 @@
+SYMBOL TABLE:
+Index	Symbol	Address
+1	BACK	156
+2	D	159
+3	E	160
+4	LOOP	152
+5	STOP	159

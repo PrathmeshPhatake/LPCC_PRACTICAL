@@ -1,0 +1,63 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+%}
+
+%union {
+    float fval;
+}
+
+%token <fval> NUMBER
+%left '+' '-'
+%left '*' '/'
+%left UMINUS
+
+%type <fval> expr
+
+%%
+input:
+    expr '\n'     { printf("Result = %f\n", $1); }
+;
+
+expr:  
+    expr '+' expr    { $$ = $1 + $3; }
+  | expr '-' expr    { $$ = $1 - $3; }     
+  | expr '*' expr    { $$ = $1 * $3; }
+  | expr '/' expr    { $$ = $1 / $3; }
+  | '-' expr %prec UMINUS  { $$ = -$2; }
+  | '(' expr ')'     { $$ = $2; }
+  | NUMBER           { $$ = $1; }
+;
+
+%%
+
+int main() {
+    printf("Enter an arithmetic expression:\n");
+    yyparse();
+    return 0;
+}
+
+int yyerror(char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+    return 0;
+}
+
+
+/*
+Install tools (only once):
+
+sudo apt update
+sudo apt install flex bison build-essential
+If you're using a distro that uses dnf (like Fedora), replace apt with dnf.
+
+Compile and build:
+
+bison -d expr.y
+flex expr.l
+gcc y.tab.c lex.yy.c -lfl -o expr_evaluator
+
+
+Run the evaluator:
+./expr_evaluator
+Then input: 0.33*12-4-4+(3*2) and press Enter.
+*/
