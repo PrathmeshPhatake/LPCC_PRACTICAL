@@ -15,3 +15,217 @@ STOP
 X DS 1
 Y DS 1
 END
+
+🔹 1. Symbol Table
+A data structure used by the compiler to store information about identifiers (variables, functions, objects, etc.).
+
+It contains details like:
+
+Name of the identifier
+
+Type (int, float, etc.)
+
+Scope (local/global)
+
+Memory address or location
+
+Example:
+
+pgsql
+Copy
+Edit
+| Name | Type  | Address |
+|------|-------|---------|
+| x    | int   | 1000    |
+| y    | float | 1004    |
+🔹 2. Literal Table (LITTAB)
+Stores information about literals used in the source code (e.g., numbers, strings).
+
+Each literal is stored only once with an index and possibly an address assigned during assembly.
+
+Example:
+
+yaml
+Copy
+Edit
+| Index | Literal | Address |
+|-------|---------|---------|
+| 0     | =5      | 2000    |
+| 1     | =10     | 2004    |
+🔹 3. Pool Table
+Used when there are multiple literal pools in a program (usually in assembly with LTORG directive).
+
+It keeps track of where a new literal pool starts in the literal table.
+
+Example:
+
+pgsql
+Copy
+Edit
+| Pool No | Starting Index in LITTAB |
+|---------|---------------------------|
+| 1       | 0                         |
+| 2       | 3                         |
+🔹 4. Intermediate Code
+A low-level representation of source code between the source and machine code.
+
+It is independent of machine architecture.
+
+Types:
+
+Three-Address Code (TAC)
+
+Quadruples
+
+Triples
+
+Example (TAC):
+
+ini
+Copy
+Edit
+t1 = a + b
+t2 = t1 * c
+t3 = t2 - d
+
+
+
+Intermediate Code in a Two-Pass Macro Processor
+A macro processor is used to handle macros in assembly or higher-level languages. It works by replacing macro calls in the source code with the corresponding macro definitions, effectively expanding the macros into their full form. The two-pass macro processor performs this task in two stages, and intermediate code plays a key role in transforming the source code during this process.
+
+Two-Pass Macro Processor Overview:
+A two-pass macro processor processes the source code in two passes:
+
+First Pass: Identifies macros and stores their definitions.
+
+Second Pass: Expands the macros in the source code by using the stored definitions, generating the final intermediate code.
+
+Intermediate Code:
+Intermediate code in the context of a two-pass macro processor is a representation of the program after macros have been expanded, but before it is translated into machine-specific code. It helps in simplifying the macro processing phase, enabling easier debugging, optimization, and final code generation.
+
+1. First Pass (Macro Definition Pass):
+In this phase, the macro processor scans through the source code, searching for macro definitions. Macros are defined using a special syntax (e.g., #macro_name), and their body is typically enclosed with an end statement. During this pass:
+
+Macro Definitions are stored in a Macro Definition Table (MDT).
+
+Macro Name and the corresponding macro body are saved. The macro body may consist of one or more instructions.
+
+Intermediate Data Structures like a Macro Name Table (MNT) and a Macro Argument Table (MAT) may be used to manage macros and their arguments.
+
+Data Structures in First Pass:
+Macro Definition Table (MDT): Stores the macro's name and its corresponding code.
+
+Macro Name Table (MNT): Stores the names of macros.
+
+Macro Argument Table (MAT): Stores the arguments passed to macros, if any.
+
+Example of First Pass:
+Source code might contain:
+
+less
+Copy
+Edit
+#macro1
+MOV A, B
+ADD A, C
+end
+
+#macro2
+MOV D, E
+end
+During the first pass:
+
+#macro1 and #macro2 are identified as macros.
+
+The processor stores their definitions (the set of instructions inside the #macro and end lines) in the MDT.
+
+2. Second Pass (Macro Expansion Pass):
+In the second pass, the macro processor takes the source code and expands the macros. It looks for any macro calls and replaces them with their definitions. This phase involves the following steps:
+
+The processor reads through the source code and checks each instruction to see if it is a macro call (e.g., #macro_name).
+
+When a macro call is encountered, the corresponding macro body (stored in MDT) is inserted in place of the macro name.
+
+The expanded code is then written to the intermediate code output, which can then be further processed or optimized.
+
+Example of Second Pass:
+After performing the second pass on the above code:
+
+css
+Copy
+Edit
+MOV A, B
+ADD A, C
+MOV D, E
+The macro #macro1 and #macro2 are replaced with their definitions, resulting in the following intermediate code:
+
+css
+Copy
+Edit
+MOV A, B
+ADD A, C
+MOV D, E
+This expanded code is now ready for further processing.
+
+Role of Intermediate Code in Two-Pass Macro Processor:
+Intermediate Representation: After macro expansion, the code is in a more low-level form, closer to what the machine code will eventually look like.
+
+Simplification: By transforming the source code into intermediate code, the complexity of managing macro calls is reduced. This allows for better code generation in later stages.
+
+Platform-Independent Code: Intermediate code is usually not tied to a specific machine or architecture, making it easier to generate platform-specific machine code later.
+
+Code Optimization: Intermediate code can be further optimized (e.g., removing redundant instructions, simplifying expressions) before it is converted into the final machine code.
+
+Intermediate Code Generation Example:
+Consider the following source code with macro definitions and calls:
+
+Source Code (Before Macro Expansion):
+
+assembly
+Copy
+Edit
+#macro1
+MOV A, B
+ADD A, C
+end
+
+#macro2
+MOV D, E
+end
+
+START:
+MOV F, G
+#macro1
+MOV H, I
+#macro2
+First Pass:
+
+Macros #macro1 and #macro2 are identified and their definitions are stored in the Macro Definition Table (MDT).
+
+The macro calls are not expanded yet; only the definitions are stored.
+
+Second Pass:
+
+The macro calls (#macro1, #macro2) are replaced with their definitions.
+
+The resulting intermediate code will be:
+
+Intermediate Code (After Macro Expansion):
+
+assembly
+Copy
+Edit
+MOV A, B
+ADD A, C
+MOV D, E
+START:
+MOV F, G
+MOV A, B
+ADD A, C
+MOV D, E
+Conclusion:
+Intermediate Code in a two-pass macro processor is the code generated after the macro expansion phase, where macros in the source code are replaced by their definitions.
+
+The two-pass approach helps in efficiently handling macros, storing their definitions, and expanding them into final code that can be processed for optimization and machine code generation.
+
+This approach simplifies the translation process and makes it possible to handle macros independently of the underlying architecture.
